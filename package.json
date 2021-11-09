@@ -7,7 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon -e js ./src/server.js"
-    },
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -17,6 +17,7 @@
     "express": "^4.17.1",
     "express-list-endpoints": "^6.0.0",
     "http-errors": "^1.8.0",
-    "mongoose": "^6.0.12"
+    "mongoose": "^6.0.12",
+    "nodemon": "^2.0.7"
   }
 }
