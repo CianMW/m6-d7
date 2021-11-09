@@ -18,7 +18,7 @@ const postsRouter = express.Router()
 postsRouter.post("/", async (req, res, next) => {
   try {
     const newPost = new PostModel(req.body) 
-    // here happens validation of req.body, if it is not ok Mongoose will throw a "ValidationError" (btw user is still not saved in db yet)
+    //the post as outlined in the schema is created here
     const { _id } = await newPost.save() 
     // .save() === writeToFile
     res.status(201).send({ _id })
@@ -36,20 +36,36 @@ postsRouter.get("/", async (req, res, next) => {
   }
 })
 
-postsRouter.get("/:Id", async (req, res, next) => {
+postsRouter.get("/:postId", async (req, res, next) => {
   try {
-    const id = req.params.Id
+    const id = req.params.postId
 
     const post = await PostModel.findById(id)
     if (post) {
       res.send(post)
     } else {
-      next(createHttpError(404, `User with id ${id} not found!`))
+      next(createHttpError(404, `post: ${id} not found!`))
     }
   } catch (error) {
     next(error)
   }
 })
 
+//updates a post
+
+postsRouter.put("/:postId", async (req, res, next) => {
+    try {
+      const id = req.params.postId
+      const updatedPost = await PostModel.findByIdAndUpdate(id, req.body, { new: true })
+
+      if (updatedPost) {
+        res.send(updatedPost)
+      } else {
+        next(createHttpError(404, `post: ${id} not found!`))
+      }
+    } catch (error) {
+      next(error)
+    }
+  })
 
 export default postsRouter
