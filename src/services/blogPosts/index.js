@@ -68,4 +68,20 @@ postsRouter.put("/:postId", async (req, res, next) => {
     }
   })
 
+  //Deletes a post
+postsRouter.delete("/:postId", async (req, res, next) => {
+    try {
+      const id = req.params.postId
+      const deletedPost = await PostModel.deleteOne({id: id})
+
+      if (deletedPost) {
+        res.send(`Post with id: ${id} has been deleted `)
+      } else {
+        next(createHttpError(404, `post: ${id} not found!`))
+      }
+    } catch (error) {
+      next(error)
+    }
+  })
+
 export default postsRouter
