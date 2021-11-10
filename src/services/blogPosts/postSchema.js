@@ -18,7 +18,7 @@ const postSchema = new Schema(
       name: { type: String, required: true },
       avatar: { type: String },
     },
-    content: { type: String, required: true },
+    content: { type: String },
     comments: [
       {
         type: new mongoose.Schema(

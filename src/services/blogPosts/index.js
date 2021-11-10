@@ -90,8 +90,8 @@ postsRouter.delete("/:postId", async (req, res, next) => {
 
     Complete  GET /blogPosts/:id/comments => returns all the comments for the specified blog post
 GET /blogPosts/:id/comments/:commentId=> returns a single comment for the specified blog post
-      POST /blogPosts/:id => adds a new comment for the specified blog post
-PUT /blogPosts/:id/comment/:commentId => edit the comment belonging to the specified blog post
+    COMPLETE  POST /blogPosts/:id => adds a new comment for the specified blog post
+      PUT /blogPosts/:id/comment/:commentId => edit the comment belonging to the specified blog post
 DELETE /blogPosts/:id/comment/:commentId=> delete the comment belonging to the specified blog post */
 postsRouter.get("/:postId/comments", async (req, res, next) => {
   try {
@@ -108,6 +108,8 @@ postsRouter.get("/:postId/comments", async (req, res, next) => {
   }
 })
 
+
+//ADDS A COMMENT TO A BLOG POST
 postsRouter.post("/:postId/comments", async (req, res, next) => {
   try {
     const id = req.params.postId
@@ -126,6 +128,44 @@ postsRouter.post("/:postId/comments", async (req, res, next) => {
       next(createHttpError(404, `post with id: ${req.params.postId} not found!`))
     }
 
+  } catch (error) {
+    next(error)
+  }
+})
+
+
+//UPDATES A COMMENT 
+
+postsRouter.put("/:postId/comments/:commentId", async (req, res, next) => {
+  try {
+    const postId = req.params.postId
+    const commentId = req.params.commentId
+    const post = await PostModel.findById(postId)
+
+    if (post) {
+      const index = post.comments.findIndex(i => i._id.toString() === commentId)
+      console.log(index)
+
+      if (index !== -1) {
+        console.log(post.comments[index])
+        post.comments[index] = { ...post.comments[index].toObject(), ...req.body }
+        await post.save()
+        res.send(post)
+      } else {
+        next(createHttpError(404, `comment with id: ${commentId} not found!`))
+      }
+      
+    } else {
+      next(createHttpError(404, `post with id:  ${commentId} not found!`))
+    }
+
+    const updatedPost = await PostModel.findByIdAndUpdate(id, req.body, { new: true })
+
+    if (updatedPost) {
+      res.send(updatedPost)
+    } else {
+      next(createHttpError(404, `post: ${id} not found!`))
+    }
   } catch (error) {
     next(error)
   }
