@@ -88,9 +88,9 @@ postsRouter.delete("/:postId", async (req, res, next) => {
 
   /*TODO: implement the following endpoints
 
-GET /blogPosts/:id/comments => returns all the comments for the specified blog post
+    Complete  GET /blogPosts/:id/comments => returns all the comments for the specified blog post
 GET /blogPosts/:id/comments/:commentId=> returns a single comment for the specified blog post
-POST /blogPosts/:id => adds a new comment for the specified blog post
+      POST /blogPosts/:id => adds a new comment for the specified blog post
 PUT /blogPosts/:id/comment/:commentId => edit the comment belonging to the specified blog post
 DELETE /blogPosts/:id/comment/:commentId=> delete the comment belonging to the specified blog post */
 postsRouter.get("/:postId/comments", async (req, res, next) => {
@@ -108,13 +108,24 @@ postsRouter.get("/:postId/comments", async (req, res, next) => {
   }
 })
 
-postsRouter.post("/", async (req, res, next) => {
+postsRouter.post("/:postId/comments", async (req, res, next) => {
   try {
+    const id = req.params.postId
     const post = await PostModel.findById(id,  { _id: 0 })
     //this grabs the post that has the comments document nested inside
-    const { _id } = await newPost.save() 
-    // .save() === writeToFile
-    res.status(201).send({ _id })
+
+    const newComment = req.body
+    //the data for the comment is in the req body
+
+    if (post) {
+      const addComment = await PostModel.findByIdAndUpdate(id, { $push: { comments: newComment}   }, {new: true} )
+      res.send(addComment)
+
+
+    } else {
+      next(createHttpError(404, `post with id: ${req.params.postId} not found!`))
+    }
+
   } catch (error) {
     next(error)
   }
