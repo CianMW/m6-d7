@@ -159,19 +159,33 @@ postsRouter.put("/:postId/comments/:commentId", async (req, res, next) => {
       next(createHttpError(404, `post with id:  ${commentId} not found!`))
     }
 
-    const updatedPost = await PostModel.findByIdAndUpdate(id, req.body, { new: true })
-
-    if (updatedPost) {
-      res.send(updatedPost)
-    } else {
-      next(createHttpError(404, `post: ${id} not found!`))
-    }
   } catch (error) {
     next(error)
   }
 })
 
 
+//DELETES A COMMENT
 
+postsRouter.delete("/:postId/comments/:commentId", async (req, res, next) => {
+  try {
+    const postId = req.params.postId
+    const commentId = req.params.commentId
+
+    const updatedPost = await PostModel.findByIdAndUpdate(
+      postId,
+      { $pull: { comments: { _id: commentId } } },
+      { new: true }
+    )
+    if (updatedPost) {
+      res.send(updatedPost)
+    } else {
+      next(createHttpError(404, `post with id ${postId} not found!`))
+    }
+  } catch (error) {
+    next(error)
+  }
+
+})
 
 export default postsRouter
