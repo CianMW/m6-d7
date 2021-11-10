@@ -10,6 +10,7 @@ DELETE /blogPosts /123 => delete the blogPost with the given id
 
 import express from "express"
 import createHttpError from "http-errors"
+import q2m from "query-to-mongo"
 
 import PostModel from "./postSchema.js"
 
@@ -83,5 +84,43 @@ postsRouter.delete("/:postId", async (req, res, next) => {
       next(error)
     }
   })
+
+
+  /*TODO: implement the following endpoints
+
+GET /blogPosts/:id/comments => returns all the comments for the specified blog post
+GET /blogPosts/:id/comments/:commentId=> returns a single comment for the specified blog post
+POST /blogPosts/:id => adds a new comment for the specified blog post
+PUT /blogPosts/:id/comment/:commentId => edit the comment belonging to the specified blog post
+DELETE /blogPosts/:id/comment/:commentId=> delete the comment belonging to the specified blog post */
+postsRouter.get("/:postId/comments", async (req, res, next) => {
+  try {
+    const id = req.params.postId
+
+    const post = await PostModel.findById(id)
+    if (post) {
+      res.send(post.comments)
+    } else {
+      next(createHttpError(404, `post: ${id} not found!`))
+    }
+  } catch (error) {
+    next(error)
+  }
+})
+
+postsRouter.post("/", async (req, res, next) => {
+  try {
+    const post = await PostModel.findById(id,  { _id: 0 })
+    //this grabs the post that has the comments document nested inside
+    const { _id } = await newPost.save() 
+    // .save() === writeToFile
+    res.status(201).send({ _id })
+  } catch (error) {
+    next(error)
+  }
+})
+
+
+
 
 export default postsRouter
