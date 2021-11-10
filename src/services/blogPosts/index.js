@@ -109,6 +109,26 @@ postsRouter.get("/:postId/comments", async (req, res, next) => {
 })
 
 
+//gets specific comment
+postsRouter.get("/:postId/comments/:commentId", async (req, res, next) => {
+  try {
+
+    const postId = req.params.postId
+    const commentId = req.params.commentId
+
+    const post = await PostModel.findById(postId)
+    if (post) {
+      const foundComment = post.comments.find(comment => comment._id.toString() === commentId)
+      res.send(foundComment)
+    } else {
+      next(createHttpError(404, `post: ${id} not found!`))
+    }
+  } catch (error) {
+    next(error)
+  }
+})
+
+
 //ADDS A COMMENT TO A BLOG POST
 postsRouter.post("/:postId/comments", async (req, res, next) => {
   try {
