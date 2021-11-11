@@ -220,4 +220,57 @@ postsRouter.delete("/:postId/comments/:commentId", async (req, res, next) => {
 
 })
 
+
+
+
+
+//Gets all likes 
+
+postsRouter.get("/:postId/likes", async (req, res, next) => {
+  try {
+
+    const id = req.params.postId
+
+    const post = await PostModel.findById(id).populate({ path: "author", select: "name surname"})
+    const likes = post.likes
+    const likedBy = await post.likes
+    const total = await likes.length
+    console.log("CHECKING",total)
+    if (post) {
+      res.send(`Total like: ${total}   Liked by: ${likedBy}`)
+    } else {
+      res.send(`post: ${id} not found!`)
+    }
+  } catch (error) {
+    next(error)
+  }
+})
+
+
+//Adds new like
+postsRouter.post("/:postId/likes/:authorId", async (req, res, next) => {
+  try {
+    const authId = req.params.authorId
+    const id = req.params.postId
+    const post = await PostModel.findById(id,  { _id: 0 })
+    //this grabs the post that has the likes document nested inside
+
+    const newLike = authId
+    //this "like" is composed of the author/users id
+
+    if (post) {
+      const addLike = await PostModel.findByIdAndUpdate(id, { $push: { likes: newLike}   }, {new: true} )
+      res.send(addLike)
+
+
+    } else {
+      next(createHttpError(404, `post with id: ${req.params.postId} not found!`))
+    }
+
+  } catch (error) {
+    next(error)
+  }
+})
+
+
 export default postsRouter

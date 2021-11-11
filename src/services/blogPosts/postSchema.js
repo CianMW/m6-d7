@@ -25,6 +25,9 @@ const postSchema = new Schema(
         ),
       },
     ],
+    likes: [
+          {  type: Schema.Types.ObjectId, ref: 'Author' }
+    ],
   },
   {
     timestamps: true, // Automatically adds timestamp for setting and update
