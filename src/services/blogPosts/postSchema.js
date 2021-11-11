@@ -18,12 +18,11 @@ const postSchema = new Schema(
       name: { type: String, required: true },
       avatar: { type: String },
     },
-    content: { type: String },
+    content: { type: String, required: true },
     comments: [
       {
         type: new mongoose.Schema(
-          { username: { type: String }, content: { type: String } },
-          { timestamps: true }
+          { username: { type: String }, text: { type: String } }
         ),
       },
     ],

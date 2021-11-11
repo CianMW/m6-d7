@@ -29,13 +29,24 @@ postsRouter.post("/", async (req, res, next) => {
 })
 
 postsRouter.get("/", async (req, res, next) => {
-  try {
-    const posts = await PostModel.find()
-    res.send(posts)
-  } catch (error) {
-    next(error)
-  }
-})
+    try {
+      const mongoQuery = q2m(req.query)
+      const total = await PostModel.countDocuments(mongoQuery.criteria)
+      const posts = await PostModel.find(mongoQuery.Criteria).limit(mongoQuery.options.limit).skip(mongoQuery.options.skip).sort(mongoQuery.options.sort)
+      res.send({ links: mongoQuery.links("/posts", total), pageTotal: Math.ceil(total / mongoQuery.options.limit),posts})
+      }
+      catch (error) {console.log(error)}
+      })
+
+
+
+
+//     const posts = await PostModel.find()
+//     res.send(posts)
+//   } catch (error) {
+//     next(error)
+//   }
+// })
 
 postsRouter.get("/:postId", async (req, res, next) => {
   try {
