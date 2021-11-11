@@ -15,8 +15,7 @@ const postSchema = new Schema(
       unit: { type: String },
     },
     author: {
-      name: { type: String, required: true },
-      avatar: { type: String },
+      type: Schema.Types.ObjectId, required: true, ref: 'Author' 
     },
     content: { type: String, required: true },
     comments: [
