@@ -15,13 +15,24 @@ authorsRouter.get("/", async (req, res, next) => {
         res.send({ links: mongoQuery.links("/authors", total), pageTotal: Math.ceil(total / mongoQuery.options.limit), total, authors })
     }
     catch(error) {
-
+        next(error)
     }
 })
 
 
 //posts a new author/user
-authorsRouter.post("/", async (req, res, next) => {})
+authorsRouter.post("/", async (req, res, next) => {
+    try{
+        const newAuthor = new AuthorModel(req.body) 
+
+        const { _id } = await newAuthor.save() 
+        // .save() === writeToFile
+        res.status(201).send({ _id })
+    }
+    catch(error){
+        next(error)
+    }
+})
 
 //get by id
 authorsRouter.get("/", async (req, res, next) => {})
