@@ -4,6 +4,7 @@ import mongoose from "mongoose"
 import dotenv from 'dotenv/config';
 import listEndpoints from "express-list-endpoints";
 import postsRouter from "./services/blogPosts/index.js";
+import authorsRouter from "./services/authors/index.js";
 const server = express()
 
 server.use(cors("*"))
@@ -12,6 +13,7 @@ server.use(express.json())
 //ROUTES
 
 server.use("/posts", postsRouter)
+server.use("/authors", authorsRouter)
 
 
 mongoose.connect(process.env.MONGO_CONNECTION)

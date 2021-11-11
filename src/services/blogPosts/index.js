@@ -16,6 +16,7 @@ import PostModel from "./postSchema.js"
 
 const postsRouter = express.Router()
 
+//A new blog post has the author id in the body as a string
 postsRouter.post("/", async (req, res, next) => {
   try {
     const newPost = new PostModel(req.body) 
@@ -32,7 +33,7 @@ postsRouter.get("/", async (req, res, next) => {
     try {
       const mongoQuery = q2m(req.query)
       const total = await PostModel.countDocuments(mongoQuery.criteria)
-      const posts = await PostModel.find(mongoQuery.Criteria).limit(mongoQuery.options.limit).skip(mongoQuery.options.skip).sort(mongoQuery.options.sort).populate({ path: "Author"})
+      const posts = await PostModel.find(mongoQuery.Criteria).limit(mongoQuery.options.limit).skip(mongoQuery.options.skip).sort(mongoQuery.options.sort).populate({ path: "authors"})
       res.send({ links: mongoQuery.links("/posts", total), pageTotal: Math.ceil(total / mongoQuery.options.limit),posts})
       }
       catch (error) {console.log(error)}
