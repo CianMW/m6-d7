@@ -68,11 +68,17 @@ authorsRouter.delete("/:authorId", async (req, res, next) => {
 
 authorsRouter.put("/:authorId", async (req, res, next) => {
     try {
-
-
-    } catch (error) {
-      next(error);
-    }
-});
+        const id = req.params.authorId
+        const updatedAuthor = await AuthorModel.findByIdAndUpdate(id, req.body, { new: true })
+  
+        if (updatedAuthor) {
+          res.send(updatedAuthor)
+        } else {
+          next(createHttpError(404, `Author with the id: ${id} not found!`))
+        }
+      } catch (error) {
+        next(error)
+      }
+    })
 
 export default authorsRouter;
