@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+// import UserModel from ""
 
 const { Schema, model } = mongoose;
 
@@ -6,6 +7,7 @@ const authorSchema = new Schema(
     {
     name: { type: String, required: true },
     surname: { type: String, required: true },
+    password: { type: String, required: true }
 
 },{timestamps: true})
 
@@ -21,6 +23,7 @@ authorSchema.static("findAuthors", async function (query) {
   
     return { total, authors }
   })
+
 
 
 
