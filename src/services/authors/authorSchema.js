@@ -28,12 +28,12 @@ authorSchema.static("findAuthors", async function (query) {
 // "This" refers to the model
 authorSchema.pre("save", async function () {
   const newAuthor = this;
-  const plainPW = newUser.password;
+  const plainPW = newAuthor.password;
   if (newAuthor.isModified("password")) {
     const hash = await bcrypt.hash(plainPW, 10);
-    newUser.password = hash;
+    newAuthor.password = hash;
   }
-  next();
+  return newAuthor
 });
 
 
