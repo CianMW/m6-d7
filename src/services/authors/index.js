@@ -1,6 +1,7 @@
 import express from "express";
 import createHttpError from "http-errors";
 import q2m from "query-to-mongo";
+import authorizationMiddle from "../../middlewares/authorization.js";
 import AuthorModel from "./authorSchema.js";
 
 const authorsRouter = express.Router();
@@ -35,7 +36,7 @@ authorsRouter.post("/", async (req, res, next) => {
 });
 
 //get by id
-authorsRouter.get("/:authorId", async (req, res, next) => {
+authorsRouter.get("/:authorId", authorizationMiddle, async (req, res, next) => {
     try {
         const id = req.params.authorId
     
