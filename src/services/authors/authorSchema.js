@@ -58,4 +58,15 @@ authorSchema.statics.checkCredentials = async function (email, plainPW) {
   
 }  
 
+
+authorSchema.methods.toJSON = function() {
+  const CurrentDoc = this  
+  const authorObject = CurrentDoc.toObject()
+  delete  authorObject.password
+  //Doesn't affect the database
+  delete  authorObject.__v
+
+  return authorObject
+}  
+
 export default model("Author", authorSchema);
