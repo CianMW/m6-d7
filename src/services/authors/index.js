@@ -3,6 +3,7 @@ import createHttpError from "http-errors";
 import q2m from "query-to-mongo";
 import authorizationMiddle from "../../middlewares/authorization.js";
 import AuthorModel from "./authorSchema.js";
+import PostModel from "../blogPosts/postSchema.js"
 
 const authorsRouter = express.Router();
 
@@ -35,6 +36,20 @@ authorsRouter.post("/", async (req, res, next) => {
   }
 });
 
+
+// The user can get their own details 
+authorsRouter.get("/me", authorizationMiddle, async (req, res, next) => {
+  try {
+    if (req.user) {
+      res.send(req.user)
+    } else {
+      next(createHttpError(404, `Author with the ${id} not found!`))
+    }
+  } catch (error) {
+    next(error)
+  }
+})
+
 //get by id
 authorsRouter.get("/:authorId", authorizationMiddle, async (req, res, next) => {
     try {
@@ -50,6 +65,39 @@ authorsRouter.get("/:authorId", authorizationMiddle, async (req, res, next) => {
         next(error)
       }
     })
+
+
+authorsRouter.get("/me/stories", authorizationMiddle, async (req, res, next) => {
+    try {
+        const id = req.user._id
+    
+        const posts = await PostModel.find({author: id})
+        if (posts) {
+          res.send(posts)
+        } else {
+          next(createHttpError(404, `Blog posts made with the author ID: ${id} not found!`))
+        }
+      } catch (error) {
+        next(error)
+      }
+    })
+
+//delete current User
+authorsRouter.delete("/me",authorizationMiddle, async (req, res, next) => {
+  try {
+    const id = req.user._id
+    const deletedAuthor = await AuthorModel.deleteOne({id: id})
+
+    if(deletedAuthor){
+        res.status(204).send(`Author with id ${id} has been deleted`)
+    }else {
+        res.send(`Author with id ${id} not found`)
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
 
 //delete specific user
 authorsRouter.delete("/:authorId", async (req, res, next) => {
@@ -71,6 +119,21 @@ authorsRouter.put("/:authorId", async (req, res, next) => {
     try {
         const id = req.params.authorId
         const updatedAuthor = await AuthorModel.findByIdAndUpdate(id, req.body, { new: true })
+  
+        if (updatedAuthor) {
+          res.send(updatedAuthor)
+        } else {
+          next(createHttpError(404, `Author with the id: ${id} not found!`))
+        }
+      } catch (error) {
+        next(error)
+      }
+    })
+
+    // user may update themselves 
+authorsRouter.put("/me", authorizationMiddle,  async (req, res, next) => {
+    try {
+        const updatedAuthor = await AuthorModel.findByIdAndUpdate(req.user.id, req.body, { new: true })
   
         if (updatedAuthor) {
           res.send(updatedAuthor)

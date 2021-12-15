@@ -65,7 +65,6 @@ authorSchema.methods.toJSON = function() {
   delete  authorObject.password
   //Doesn't affect the database
   delete  authorObject.__v
-
   return authorObject
 }  
 
