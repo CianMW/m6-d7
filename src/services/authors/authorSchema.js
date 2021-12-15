@@ -38,6 +38,8 @@ authorSchema.pre("save", async function () {
 
 
 authorSchema.statics.checkCredentials = async function (email, plainPW) {
+  console.log("EMAIL:", email)
+  console.log("pw:",plainPW)
   //finds user by email
   //if user => compare PWs 
   const user = await this.findOne({email: email})  
@@ -51,7 +53,7 @@ authorSchema.statics.checkCredentials = async function (email, plainPW) {
       }
   } else {
 
-    return null
+    return undefined
   }
   
 }  

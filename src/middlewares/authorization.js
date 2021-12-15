@@ -6,14 +6,15 @@ const authorizationMiddle = async (req, res, next) => {
     // check if the header exists
     if (req.headers.authorization) {
 
-        const base64Cred = req.headers.authorization.split("")[1]
+        const base64Cred = req.headers.authorization.split(" ")[1]
         //atob changes base64 into a string
-        const credentials = atob(base64Credentials)
-        console.log(credentials)
+        const credentials = atob(base64Cred)
+        console.log("THE CREDS: ",credentials)
         const [email, password] = credentials.split(":")
         // to check the db can use a custom static method
-        const user = await UserModel.checkCredentials(email, password)
+        const user = await AuthorModel.checkCredentials(email, password)
         //checkCredentials finds the user by email and checks the password
+        console.log(user)
         if(user) {
         //The user was found and password comparison is correct 
             req.user = user // attach the verfied user to request
