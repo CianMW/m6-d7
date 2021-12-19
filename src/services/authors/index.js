@@ -4,6 +4,8 @@ import q2m from "query-to-mongo";
 import authorizationMiddle from "../../middlewares/authorization.js";
 import AuthorModel from "./authorSchema.js";
 import PostModel from "../blogPosts/postSchema.js";
+import { jwtAuth } from "../../tools/index.js";
+import  verifyTokenMiddle  from "../../middlewares/verifyTokenMiddle.js";
 
 const authorsRouter = express.Router();
 
@@ -28,7 +30,7 @@ authorsRouter.post("/login", async (req, res, next) => {
     const { email, password } = req.body;
     const user = await AuthorModel.checkCredentials(email, password);
     if (user) {
-      const token = jwtAuth(user);
+      const token = await jwtAuth(user);
       if (!token) {
         next(createHttpError(403));
       } else {
@@ -44,8 +46,12 @@ authorsRouter.post("/login", async (req, res, next) => {
 
 authorsRouter.post("/register", async (req, res, next) => {
   try {
+    const email = req.body.email
+    console.log(email)
+
     const foundEmail = await AuthorModel.find({ email });
-    if (foundEmail) {
+    console.log(foundEmail)
+    if (foundEmail.length > 0) {
       next(createHttpError(400, "Email is already in use"));
     } else {
       const newAuthor = new AuthorModel(req.body);
@@ -73,7 +79,7 @@ authorsRouter.post("/", async (req, res, next) => {
 });
 
 // The user can get their own details
-authorsRouter.get("/me", authorizationMiddle, async (req, res, next) => {
+authorsRouter.get("/me", verifyTokenMiddle, async (req, res, next) => {
   try {
     if (req.user) {
       res.send(req.user);
