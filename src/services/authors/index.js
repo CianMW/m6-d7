@@ -24,6 +24,23 @@ authorsRouter.get("/", async (req, res, next) => {
     next(error);
   }
 });
+
+
+//Login through google
+authorsRouter.get("/users/googleLogin", async (req, res, next) => {
+  try {
+    const mongoQuery = q2m(req.query);
+    const { total, authors } = await AuthorModel.findAuthors(mongoQuery);
+    res.send({
+      links: mongoQuery.links("/authors", total),
+      pageTotal: Math.ceil(total / mongoQuery.options.limit),
+      total,
+      authors,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
 //user/author login
 authorsRouter.post("/login", async (req, res, next) => {
   try {
@@ -34,7 +51,9 @@ authorsRouter.post("/login", async (req, res, next) => {
       if (!token) {
         next(createHttpError(403));
       } else {
-        res.status(200).send({ token });
+        res.cookie("token", token)
+        // res.redirect("https://google.com/");
+        res.status(200).send({ token })
       }
     } else {
       next(createHttpError(404, "User credentials error"));
