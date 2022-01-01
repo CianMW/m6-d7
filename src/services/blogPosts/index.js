@@ -237,7 +237,7 @@ postsRouter.get("/:postId/likes", async (req, res, next) => {
     const total = await likes.length
     console.log("CHECKING",total)
     if (post) {
-      res.send(`Total like: ${total}   Liked by: ${likedBy}`)
+      res.send(`Total like: ${total}   Liked by: ${likes}`)
     } else {
       res.send(`post: ${id} not found!`)
     }
@@ -259,8 +259,19 @@ postsRouter.post("/:postId/likes/:authorId", async (req, res, next) => {
     //this "like" is composed of the author/users id
 
     if (post) {
-      const addLike = await PostModel.findByIdAndUpdate(id, { $push: { likes: newLike}   }, {new: true} )
-      res.send(addLike)
+      const likeString = await post.likes.map(like => like.toString())
+      console.log("after toString() ", likeString )
+      const checkForLike = await likeString.findIndex(like => like === authId )
+      console.log("THE INDEX: ", checkForLike)
+      if (checkForLike !== -1){
+        console.log("REMOVING")
+        const removeLike = await PostModel.findByIdAndUpdate(id,  { $pull: { likes:  newLike  } } )       
+        res.send(removeLike)
+      } else {
+        console.log("ADDING")
+        const addLike = await PostModel.findByIdAndUpdate(id, { $push: { likes: newLike}   }, {new: true} )
+        res.send(addLike)
+      }
 
 
     } else {
